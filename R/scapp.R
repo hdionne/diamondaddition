@@ -29,9 +29,9 @@ scapp = function() {
     ),
     mainPanel(
      tabsetPanel(
-      tabPanel("main", plotOutput("view"), sidebarPanel(checkboxInput('check'))),
-      tabPanel("interact", plotly::plotlyOutput("viewly"), sidebarPanel(checkboxInput('checkly'))),
-      tabPanel("author", plotOutput("auth"), sidebarPanel(checkBoxInput(checkboxInput('checkauth')))),
+      tabPanel("main", plotOutput("view"), sidebarPanel(checkboxGroupInput('check', label='test', choices=c('a','b')))),
+      tabPanel("interact", plotly::plotlyOutput("viewly"))),
+      tabPanel("author", plotOutput("auth")),
       tabPanel("ref comp", verbatimTextOutput("called"))
      ),
     )
