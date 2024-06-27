@@ -74,12 +74,13 @@ scapp = function() {
      ggplot2::geom_point() +
      ggplot2::scale_alpha_manual(
       breaks = output$checkly$choices,
-      values = ifelse(output$checkly$choices %in% output$checkly$selected, 1, 0)
+      values = ifelse(output$checkly$choices %in% input$checkly$selected, 1, 0)
       
      )
    plotly::ggplotly(gg)
    })     
   })
+  display_plot()
   output$auth = renderPlot({
    scater::plotPCA(given, colour_by = "label",
         ncomponents=input$ncomp, theme_size=14)
