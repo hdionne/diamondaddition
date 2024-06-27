@@ -29,11 +29,11 @@ scapp = function() {
     ),
     mainPanel(
      tabsetPanel(
-      tabPanel("main", plotOutput("view")),
-      tabPanel("interact", plotly::plotlyOutput("viewly")),
-      tabPanel("author", plotOutput("auth")),
+      tabPanel("main", plotOutput("view"), sidebarPanel(checkboxInput('check'))),
+      tabPanel("interact", plotly::plotlyOutput("viewly"), sidebarPanel(checkboxInput('checkly'))),
+      tabPanel("author", plotOutput("auth"), sidebarPanel(checkBoxInput(checkboxInput('checkauth')))),
       tabPanel("ref comp", verbatimTextOutput("called"))
-     )
+     ),
     )
    )
   )
