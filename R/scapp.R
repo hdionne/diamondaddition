@@ -32,7 +32,7 @@ scapp = function() {
     mainPanel(
      tabsetPanel(
       tabPanel("main", plotOutput("view")),
-      tabPanel("interact", sidebarLayout(mainPanel = plotly::plotlyOutput("viewly"), sidebarPanel = sidebarPanel(checkboxGroupInput('checkly', label=NULL, choices=c())), position='right')),
+      tabPanel("interact", sidebarLayout(mainPanel = mainPanel(plotly::plotlyOutput("viewly")), sidebarPanel = sidebarPanel(checkboxGroupInput('checkly', label=NULL, choices=c())), position='right')),
       tabPanel("author", plotOutput("auth")),
       tabPanel("ref comp", verbatimTextOutput("called"))
      ),
@@ -83,8 +83,9 @@ scapp = function() {
        print(input$checkly)
        gg = ggplot2::ggplot(mydf, aes(x=PC1, y=PC2, text=type,
           colour=type)) +
-         ggplot2::geom_point()
-       plotly::ggplotly(gg)
+         ggplot2::geom_point() +
+         ggplot2::theme(legend.position = 'none')
+       plotly::ggplotly(gg) 
   })       
        
 
