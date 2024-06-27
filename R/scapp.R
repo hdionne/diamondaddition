@@ -13,15 +13,6 @@
 #' more general upload capability as a project.
 #' @export
 
-library(shiny)
-library(shinytoastr)
-library(celldex)
-library(SingleR)
-library(scRNAseq)
-library(scran)
-library(scater)
-library(scuttle)
-library(BiocParallel)
 
 scapp = function() {
 # derived from ls("package:celldex")
@@ -41,7 +32,7 @@ scapp = function() {
     mainPanel(
      tabsetPanel(
       tabPanel("main", plotOutput("view")),
-      tabPanel("interact", plotly::plotlyOutput("viewly"), sidebarPanel(checkboxGroupInput('checkly', label=NULL, choices=c()))),
+      tabPanel("interact", sidebarLayout(mainPanel = plotly::plotlyOutput("viewly"), sidebarPanel = sidebarPanel(checkboxGroupInput('checkly', label=NULL, choices=c())), position='right')),
       tabPanel("author", plotOutput("auth")),
       tabPanel("ref comp", verbatimTextOutput("called"))
      ),
@@ -97,16 +88,6 @@ scapp = function() {
   })       
        
 
-  
- 
-  
-  # observeEvent( # When the checked inputs are changed, update the plot
-  #     input$checkly,
-  #     {
-  #         makeplotly()
-  #     }
-  # )
-  
   output$auth = renderPlot({
    scater::plotPCA(given, colour_by = "label",
         ncomponents=input$ncomp, theme_size=14)
