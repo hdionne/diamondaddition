@@ -29,8 +29,8 @@ scapp = function() {
     ),
     mainPanel(
      tabsetPanel(
-      tabPanel("main", plotOutput("view"), sidebarPanel(checkboxGroupInput('check', label=NULL, choices=c('a','b')))),
-      tabPanel("interact", plotly::plotlyOutput("viewly")),
+      tabPanel("main", plotOutput("view")),
+      tabPanel("interact", plotly::plotlyOutput("viewly"), sidebarPanel(checkboxGroupInput('checkly', label=NULL, choices=c()))),
       tabPanel("author", plotOutput("auth")),
       tabPanel("ref comp", verbatimTextOutput("called"))
      ),
@@ -54,6 +54,8 @@ scapp = function() {
    sing = SingleR::SingleR(given, ref2use, ref2use$label.main, BPPARAM=myb)
    shinytoastr::toastr_info("done")
    given$celltype = sing$labels
+   output$checkly$choises = levels(given$celltype)
+   output$checkly$selected = output$checkly$choices
    #scater::runPCA(given)
    given
    })
@@ -62,15 +64,22 @@ scapp = function() {
    scater::plotPCA(given, colour_by = "celltype", 
         ncomponents=input$ncomp, theme_size=14)
    })
-  output$viewly = plotly::renderPlotly({
+  display_plot = reactive({
+   output$viewly = plotly::renderPlotly({
    given = run_SingleR()
    dfr = SingleCellExperiment::reducedDim(given)
    mydf = data.frame(PC1 = dfr[,1], PC2=dfr[,2], type=given$celltype)
    gg = ggplot2::ggplot(mydf, aes(x=PC1, y=PC2, text=type,
       colour=type)) +
-     ggplot2::geom_point()
+     ggplot2::geom_point() +
+     ggplot2::scale_alpha_manual(
+      breaks = output$checkly$choices,
+      values = ifelse(output$checkly$choices %in% output$checkly$selected, 1, 0)
+      
+     )
    plotly::ggplotly(gg)
-   })
+   })     
+  })
   output$auth = renderPlot({
    scater::plotPCA(given, colour_by = "label",
         ncomponents=input$ncomp, theme_size=14)
@@ -85,4 +94,4 @@ scapp = function() {
 
    
  
- 
+b 
