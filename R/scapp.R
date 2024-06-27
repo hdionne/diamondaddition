@@ -91,7 +91,3 @@ scapp = function() {
  }
  runApp(list(ui=ui, server=server))
 }
-
-   
- 
-b 
