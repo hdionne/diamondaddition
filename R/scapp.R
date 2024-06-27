@@ -12,6 +12,17 @@
 #' @note We work just with the MuraroPancreasData, leaving
 #' more general upload capability as a project.
 #' @export
+
+library(shiny)
+library(shinytoastr)
+library(celldex)
+library(SingleR)
+library(scRNAseq)
+library(scran)
+library(scater)
+library(scuttle)
+library(BiocParallel)
+
 scapp = function() {
 # derived from ls("package:celldex")
  optfuns = c("BlueprintEncodeData", "DatabaseImmuneCellExpressionData", 
@@ -55,7 +66,11 @@ scapp = function() {
    sing = SingleR::SingleR(given, ref2use, ref2use$label.main, BPPARAM=myb)
    shinytoastr::toastr_info("done")
    given$celltype = sing$labels
-   
+   updateCheckboxGroupInput(
+       inputId = 'checkly',
+       choices = unique(given$celltype),
+       selected = unique(given$celltype)
+   )
    #scater::runPCA(given)
    given
   })
@@ -65,39 +80,32 @@ scapp = function() {
    scater::plotPCA(given, colour_by = "celltype", 
         ncomponents=input$ncomp, theme_size=14)
    })
-  available_options <- reactive({
-      input$checkly$celltype
-  })
   
-  makeplotly <-  function() {
-       output$viewly = plotly::renderPlotly({
+   output$viewly = plotly::renderPlotly({
        given = run_SingleR()
+       given = given[,which(given$celltype %in% input$checkly)]
        dfr = SingleCellExperiment::reducedDim(given)
        mydf = data.frame(PC1 = dfr[,1], PC2=dfr[,2], type=given$celltype)
+       print('available:')
+       print(unique(given$celltype))
+       print('selected:')
+       print(input$checkly)
        gg = ggplot2::ggplot(mydf, aes(x=PC1, y=PC2, text=type,
           colour=type)) +
-         ggplot2::geom_point() +
-         ggplot2::scale_alpha_manual(
-          breaks = output$checkly$choices,
-          values = ifelse(available_choices, %in% currChecked, 1, 0)
-          
-         )
+         ggplot2::geom_point()
        plotly::ggplotly(gg)
-      })       
-  }
+  })       
+       
+
   
-  makeplotly() # Run the initial changes
+ 
   
-  currChecked = reactive({ # When the checked inputs are changed, update the list of checked items.
-      input$checkly$selected
-  })
-  
-  observeEvent( # When the checked inputs are changed, update the plot
-      input$checkly,
-      {
-          makeplotly()
-      }
-  )
+  # observeEvent( # When the checked inputs are changed, update the plot
+  #     input$checkly,
+  #     {
+  #         makeplotly()
+  #     }
+  # )
   
   output$auth = renderPlot({
    scater::plotPCA(given, colour_by = "label",
@@ -110,3 +118,6 @@ scapp = function() {
  }
  runApp(list(ui=ui, server=server))
 }
+
+
+scapp()
